@@ -13,6 +13,8 @@ Use Raspberry Pi to record electricity usage and display it on a web browser.
 Webブラウザからの問い合わせに対し、最近の電気使用量をグラフ化して応答します。
 
 ## Demo
+サンプル画面：今日の電気使用量グラフ
+![今日の電気使用量グラフ](Screenshot001.png)
 
 ## Requirement
 

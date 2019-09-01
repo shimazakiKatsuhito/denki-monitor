@@ -20,7 +20,8 @@
     var myAreaChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: [{% for row in graphdata2 %} '{{ row[1].strftime("%H:%M") }}', {% endfor %}],
+            labels: [{% if graphdata2 %}{% for row in graphdata2 %} '{{ row[1].strftime("%H:%M") }}', {% endfor %}
+                     {% else %}{% for row in graphdata %} '{{ row[1].strftime("%H:%M") }}', {% endfor %}{% endif %}],
             datasets: [
                 {% if graphdata2 %}
                 //データセット1 設定
