@@ -1,0 +1,10 @@
+[Unit]
+Description = denkidb daemon
+
+[Service]
+ExecStart = /usr/bin/python /home/pi/Public/denkiweb/denkiweb.py
+Restart = always
+Type = simple
+
+[Install]
+WantedBy = multi-user.target
