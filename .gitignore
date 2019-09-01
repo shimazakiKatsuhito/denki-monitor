@@ -1,0 +1,4 @@
+*.pyc
+*.log
+denki-report/denki_idpass.py
+

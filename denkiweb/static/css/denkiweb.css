@@ -1,0 +1,32 @@
+/* 電気使用量 確認サイトのスタイルシート */
+
+
+.top_menu {
+
+}
+
+.menu_button {
+    width:230px;
+    height: 35px;
+    font-size:14px;
+    font-weight:bold;
+    text-decoration:none;
+    text-align:center;
+    padding:8px 0 10px;
+    color:#fff;
+    background-color:#49a9d4;
+    border-radius:15px;
+    box-shadow:2px 2px #1a6ea0;
+}
+
+.instantaneous_power_graph {
+   text-align: center;
+   width: 90%;
+   margin: 0 auto;
+}
+
+.main {
+   background-color: #c0eec0;
+   background-image: url('/static/img/b081.jpg');
+   text-align: center;
+}

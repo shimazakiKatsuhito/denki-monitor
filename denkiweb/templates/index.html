@@ -1,0 +1,217 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="main">
+  <div class="top_message">
+    {% if message %}
+      {{message}}
+    {% endif %}
+  </div>
+  <div class="top_menu">
+    <a href="/today"><button type="button" class="menu_button">昨日と今日の毎分の電気使用量</button></a>
+    <a href="/week"><button type="button" class="menu_button">最近１週間の毎日の電気使用量</button></a>
+    <a href="/dailythismonth"><button type="button" class="menu_button">曜日別の毎日の電気使用量</button></a>
+  </div>
+  <div class="instantaneous_power_graph">
+    <canvas id="myAreaChart"></canvas>
+    <canvas id="myIntegralPowerChart"></canvas>
+    {% if graphdata %}
+    <script>
+    var ctx = document.getElementById("myAreaChart");
+    var myAreaChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [{% for row in graphdata2 %} '{{ row[1].strftime("%H:%M") }}', {% endfor %}],
+            datasets: [
+                {% if graphdata2 %}
+                //データセット1 設定
+                {
+                    fill: 'origin', //'origin'まで塗る
+                    label: 'Yesterday',
+                    data: [{% for row in graphdata2 %} '{{ row[2] }}', {% endfor %}],
+                    lineTension:0,
+                    borderColor: "rgba(133,21,199,0.7)",
+                    backgroundColor: "rgba(133,21,199,0.2)",
+                    borderWidth: 1,
+                    pointRadius: 0
+                },
+                {% endif %}
+                //データセット0 設定
+                {
+                    fill: 'origin', //'origin'まで塗る
+                    label: 'Today',
+                    data: [{% for row in graphdata %} '{{ row[2] }}', {% endfor %}],
+                    lineTension:0,
+                    borderColor: "rgba(199,21,133,1)", //ミディアムバイオレット
+                    backgroundColor: "rgba(199,21,133,0.3)",
+                    borderWidth: 2,
+                    pointRadius: 0
+                },
+            ]
+        },
+        options: {
+            title: {
+                display: true,
+                text: '今日と昨日の電気使用量 [W]'
+            },
+            scales: {
+                xAxes: [{
+                    ticks: {
+                      autoSkip: true,
+                      maxTicksLimit: 24
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        suggestedMax: 6000,
+                        suggestedMin: 0,
+                        stepSize: 1000
+                    }
+                }]
+            },
+            plugins: {
+                filler: {
+                    propagate: true
+                }
+            }
+        }
+    });
+    </script>
+    {% endif %}
+
+    {% if graphdata3 %}
+    <script>
+    var ctx = document.getElementById("myAreaChart");
+    var myAreaChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [{% for row in graphdata3 %} '{{ row[1].strftime("%Y/%m/%d") }}', {% endfor %}],
+            datasets: [
+                //データセット0 設定
+                {
+                    fill: 'origin', //'origin'まで塗る
+                    label: '7days',
+                    data: [{% for row in graphdata3 %} '{{ row[2]/10.0 }}', {% endfor %}],
+                    lineTension:0,
+                    borderColor: ["rgba(213,149,51,1)","rgba(223,210,56,1)","rgba(147,180,71,1)","rgba(0,148,83,1)","rgba(0,153,206,1)","rgba(144,62,132,1)","rgba(202,70,132,1)"],
+                    backgroundColor: ["rgba(213,149,51,0.3)","rgba(223,210,56,0.3)","rgba(147,180,71,0.3)","rgba(0,148,83,0.3)","rgba(0,153,206,0.3)","rgba(144,62,132,0.3)","rgba(202,70,132,0.3)"],
+                    borderWidth: 2,
+                },
+            ]
+        },
+        options: {
+            title: {
+                display: true,
+                text: '今週の電気使用量 [kWh]'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        suggestedMin: 0,
+                    }
+                }]
+            },            plugins: {
+                filler: {
+                    propagate: true
+                }
+            },
+            legend: {
+                display: false
+            }
+        }
+    });
+    </script>
+    {% endif %}
+
+    {% if graphdata4 %}
+    <script>
+    var ctx = document.getElementById("myAreaChart");
+    var myAreaChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+            datasets: [
+                //データセット0 設定
+                {
+                    fill: 'origin', //'origin'まで塗る
+                    label: '1st week',
+                    data: [{% for row in graphdata4[0] %} '{{ row[2]/10.0 }}', {% endfor %}],
+                    lineTension:0,
+                    borderColor: "rgba(213,149,51,1)",
+                    backgroundColor: "rgba(213,149,51,0.3)",
+                    borderWidth: 2,
+                },
+                //データセット2 設定
+                {
+                    fill: 'origin', //'origin'まで塗る
+                    label: '2nd week',
+                    data: [{% for row in graphdata4[1] %} '{{ row[2]/10.0 }}', {% endfor %}],
+                    lineTension:0,
+                    borderColor: "rgba(223,210,56,1)",
+                    backgroundColor: "rgba(223,210,56,0.3)",
+                    borderWidth: 2,
+                },
+                //データセット3 設定
+                {
+                    fill: 'origin', //'origin'まで塗る
+                    label: '3rd week',
+                    data: [{% for row in graphdata4[2] %} '{{ row[2]/10.0 }}', {% endfor %}],
+                    lineTension:0,
+                    borderColor: "rgba(147,180,71,1)", 
+                    backgroundColor: "rgba(147,180,71,0.3)",
+                    borderWidth: 2,
+                },
+                //データセット4 設定
+                {
+                    fill: 'origin', //'origin'まで塗る
+                    label: '4th week',
+                    data: [{% for row in graphdata4[3] %} '{{ row[2]/10.0 }}', {% endfor %}],
+                    lineTension:0,
+                    borderColor: "rgba(0,153,206,1)", 
+                    backgroundColor: "rgba(0,153,206,0.3)",
+                    borderWidth: 2,
+                },
+                //データセット5 設定
+                {
+                    fill: 'origin', //'origin'まで塗る
+                    label: '5th week',
+                    data: [{% for row in graphdata4[4] %} '{{ row[2]/10.0 }}', {% endfor %}],
+                    lineTension:0,
+                    borderColor: "rgba(202,70,132,1)", 
+                    backgroundColor: "rgba(202,70,132,0.3)",
+                    borderWidth: 2,
+                },
+            ]
+        },
+        options: {
+            title: {
+                display: true,
+                text: '今月の曜日別の電気使用量 [kWh]'
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        suggestedMin: 0,
+                    }
+                }]
+            },            plugins: {
+                filler: {
+                    propagate: true
+                }
+            }
+        }
+    });
+    </script>
+    {% endif %}
+  </div>
+  <div class='now_power'>
+    {% if nowpower %}
+    現在({{ nowtime }})の電気使用量は『{{ nowpower }}』Wです。
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+<hr>
+<div class="fotter">
+  Copyright (C) 2019 K.Shimazaki.
+</div>
+
