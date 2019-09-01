@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import denki_idpass # ソース公開用にIDとPasswordを別ファイルに
+
 import psycopg2
 conn = None
 
@@ -12,7 +14,8 @@ def open_db():
     global conn
     try:
         # connect to the PostgreSQL server
-        conn = psycopg2.connect("host=192.168.8.80 port=5432 dbname=denkidb user=denkiusr password=passwd00")
+        #conn = psycopg2.connect("host=AAA.BBB.CCC.DDD port=5432 dbname=XXXXX user=YYYYY password=ZZZZZ")
+        conn  = psycopg2.connect(denki_idpass.progres_idpwd)
     except (Exception, psycopg2.DatabaseError) as error:
         logger.error(error)
         logger.error("Error: Can't open Database\n")
@@ -80,7 +83,7 @@ def insert_InstantaneousPower(datetime, power):
         logger.error("Error: Can't insert InstantaneousPower\n")
         exit()
     finally:
-        logger.debug("Success: InstantaneousPower\n")
+        logger.debug("Success: insert InstantaneousPower\n")
 
 # 定時積算電力の記録
 def insert_IntegralPower(datetime, power):
@@ -96,7 +99,7 @@ def insert_IntegralPower(datetime, power):
         logger.error("Error: Can't insert IntegralPower\n")
         exit()
     finally:
-        logger.debug("Success: IntegralPower\n")
+        logger.debug("Success: insert IntegralPower\n")
 
 
 # テーブルの一覧を参照
