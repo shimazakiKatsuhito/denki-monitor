@@ -47,5 +47,9 @@ Shimazaki Katsuhito
 
 ### Reference
 
+- ECHONETのホームページ および 規格書  
+https://echonet.jp/  
+https://echonet.jp/spec_object_rh/  
+
 - スマートメーターの情報を最安ハードウェアで引っこ抜く  
 https://qiita.com/rukihena/items/82266ed3a43e4b652adb
