@@ -1,26 +1,29 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import denki_idpass # ソース公開用にIDとPasswordを別ファイルに
+
 from datetime import datetime, date, timedelta
 
 import psycopg2
 conn = None
 
 import logging
-logging.basicConfig(filename='denki_db.log',level=logging.ERROR)
+logger = logging.getLogger("DenkiWebLog").getChild("postgres")
 
 # denki_DBのオープン
 def open_db():
     global conn
     try:
         # connect to the PostgreSQL server
-        conn = psycopg2.connect("host=192.168.8.80 port=5432 dbname=denkidb user=denkiusr password=passwd00")
+        #conn = psycopg2.connect("host=AAA.BBB.CCC.DDD port=5432 dbname=XXXXX user=YYYYY password=ZZZZZ")
+        conn  = psycopg2.connect(denki_idpass.progres_idpwd)
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't open Database\n")
+        logger.error(error)
+        logger.error("Error: Can't open Database\n")
         exit()
     finally:
-        logging.debug("Success: Open Database\n")
+        logger.debug("Success: Open Database\n")
 
 # denki_DBのクローズ
 def close_db():
@@ -31,11 +34,11 @@ def close_db():
            conn.close()
            conn=None
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't close Database\n")
+        logger.error(error)
+        logger.error("Error: Can't close Database\n")
         exit()
     finally:
-        logging.debug("Success: close Database\n")
+        logger.debug("Success: close Database\n")
 
 # denki_DBのテーブル作成
 def create_table():
@@ -48,11 +51,11 @@ def create_table():
         cur.execute(cmd)
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't create table(instantaneous_power)\n")
+        logger.error(error)
+        logger.error("Error: Can't create table(instantaneous_power)\n")
         exit()
     finally:
-        logging.debug("Success: Create Table(instantaneous_power)\n")
+        logger.debug("Success: Create Table(instantaneous_power)\n")
 
     cmd = ("CREATE TABLE integral_power (id serial PRIMARY KEY,"
            "datetime timestamp NOT NULL,"
@@ -62,11 +65,11 @@ def create_table():
         cur.execute(cmd)
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't create table(integral_power)\n")
+        logger.error(error)
+        logger.error("Error: Can't create table(integral_power)\n")
         exit()
     finally:
-        logging.debug("Success: Create Table(integral_power)\n")
+        logger.debug("Success: Create Table(integral_power)\n")
 
 # 瞬時電力の記録
 def insert_InstantaneousPower(datetime, power):
@@ -78,11 +81,11 @@ def insert_InstantaneousPower(datetime, power):
         cur.execute(cmd)
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't insert InstantaneousPower\n")
+        logger.error(error)
+        logger.error("Error: Can't insert InstantaneousPower\n")
         exit()
     finally:
-        logging.debug("Success: InstantaneousPower\n")
+        logger.debug("Success: insert InstantaneousPower\n")
 
 # 定時積算電力の記録
 def insert_IntegralPower(datetime, power):
@@ -94,11 +97,11 @@ def insert_IntegralPower(datetime, power):
         cur.execute(cmd)
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't insert IntegralPower\n")
+        logger.error(error)
+        logger.error("Error: Can't insert IntegralPower\n")
         exit()
     finally:
-        logging.debug("Success: IntegralPower\n")
+        logger.debug("Success: insert IntegralPower\n")
 
 
 # テーブルの一覧を参照
@@ -112,11 +115,11 @@ def print_all_tables():
         conn.commit()
         # print(rows)
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't get all_tables\n")
+        logger.error(error)
+        logger.error("Error: Can't get all_tables\n")
         exit()
     finally:
-        logging.debug("Success: print_all_tables\n")
+        logger.debug("Success: print_all_tables\n")
     return rows
 
 # カラム一覧を参照
@@ -132,11 +135,11 @@ def print_colums(table_name):
         conn.commit()
         # print(rows)
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't get all_tables\n")
+        logger.error(error)
+        logger.error("Error: Can't get all_tables\n")
         exit()
     finally:
-        logging.debug("Success: print_all_tables\n")
+        logger.debug("Success: print_all_tables\n")
     return rows
 
 # 瞬時電力の値を参照
@@ -150,35 +153,17 @@ def print_InstantaneousPower():
         conn.commit()
         # print(rows)
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't insert InstantaneousPower\n")
+        logger.error(error)
+        logger.error("Error: Can't get Instantaneous Power\n")
         exit()
     finally:
-        logging.debug("Success: InstantaneousPower\n") 
+        logger.debug("Success: get InstantaneousPower all\n") 
     return rows
 
 # 今の瞬時電力の値を参照
 def get_InstantaneousPower_now():
     global conn
-    cmd = ("SELECT * from instantaneous_power where datetime=(select max(datetime) from instantaneous_power);")
-    try:
-        cur = conn.cursor()
-        cur.execute(cmd)
-        row = cur.fetchone()
-        conn.commit()
-        # print(rows)
-    except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't insert InstantaneousPower now\n")
-        exit()
-    finally:
-        logging.debug("Success: InstantaneousPower now\n") 
-    return row
-
-# 指定時間内の瞬時電力の値を参照
-def get_InstantaneousPower_period(starttime, endtime):
-    global conn
-    cmd = ("SELECT * from instantaneous_power where datetime between '"+starttime+"' and '"+endtime+"' order by datetime;")
+    cmd = ("SELECT * from instantaneous_power where date=(select max(date) from instantaneous_power);")
     try:
         cur = conn.cursor()
         cur.execute(cmd)
@@ -186,11 +171,11 @@ def get_InstantaneousPower_period(starttime, endtime):
         conn.commit()
         # print(rows)
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't insert InstantaneousPower now\n")
+        logger.error(error)
+        logger.error("Error: Can't get Instantaneous Power now\n")
         exit()
     finally:
-        logging.debug("Success: InstantaneousPower now\n") 
+        logger.debug("Success: get Instantaneous Power now\n") 
     return rows
 
 # 定時積算電力の値を参照
@@ -204,12 +189,49 @@ def print_IntegralPower():
         conn.commit()
         # print(rows)
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't insert InstantaneousPower\n")
+        logger.error(error)
+        logger.error("Error: Can't get Integral Power\n")
         exit()
     finally:
-        logging.debug("Success: InstantaneousPower\n") 
+        logger.debug("Success: get Integral Power\n") 
     return rows
+
+# 今の瞬時電力の値を参照
+def get_InstantaneousPower_now():
+    global conn
+    cmd = ("SELECT * from instantaneous_power where datetime=(select max(datetime) from instantaneous_power);")
+    try:
+        cur = conn.cursor()
+        cur.execute(cmd)
+        row = cur.fetchone()
+        conn.commit()
+        # print(rows)
+    except (Exception, psycopg2.DatabaseError) as error:
+        logger.error(error)
+        logger.error("Error: Can't insert InstantaneousPower now\n")
+        exit()
+    finally:
+        logger.debug("Success: InstantaneousPower now\n") 
+    return row
+
+# 指定時間内の瞬時電力の値を参照
+def get_InstantaneousPower_period(starttime, endtime):
+    global conn
+    cmd = ("SELECT * from instantaneous_power where datetime between '"+starttime+"' and '"+endtime+"' order by datetime;")
+    try:
+        cur = conn.cursor()
+        cur.execute(cmd)
+        rows = cur.fetchall()
+        conn.commit()
+        # print(rows)
+    except (Exception, psycopg2.DatabaseError) as error:
+        logger.error(error)
+        logger.error("Error: Can't insert InstantaneousPower now\n")
+        exit()
+    finally:
+        logger.debug("Success: InstantaneousPower now\n") 
+    return rows
+
 
 # 指定時間内の積算電力の値を参照
 def get_IntegralPower_period(starttime, endtime):
@@ -222,11 +244,11 @@ def get_IntegralPower_period(starttime, endtime):
         conn.commit()
         # print(rows)
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't insert integral_power\n")
+        logger.error(error)
+        logger.error("Error: Can't insert integral_power\n")
         exit()
     finally:
-        logging.debug("Success: integral_power\n") 
+        logger.debug("Success: integral_power\n") 
     return rows
 
 # 指定日の電気使用量を算出
@@ -251,18 +273,15 @@ def get_SpecefiedDate_IntegralPower(date):
         row2 = cur.fetchone()
         conn.commit()
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't insert integral_power\n")
+        logger.error(error)
+        logger.error("Error: Can't insert integral_power\n")
         exit()
     finally:
-        logging.debug("Success: integral_power\n") 
+        logger.debug("Success: integral_power\n") 
     if (row1 is None) or (row2 is None):
-        logging.info("debug1")
         return [ 0, dt, 0]
     else:
-        logging.info("debug2")
         return [row2[0], dt, row1[2]-row2[2]]
-    #return [row2[0], dt, row1[2]-row2[2]]
 
 # 最近一週間分の使用電力量の値を算出
 def get_NearWeek_IntegralPower():
@@ -275,11 +294,11 @@ def get_NearWeek_IntegralPower():
           row = get_SpecefiedDate_IntegralPower(date)
           rows.append(row)
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't insert integral_power\n")
+        logger.error(error)
+        logger.error("Error: Can't insert integral_power\n")
         exit()
     finally:
-        logging.debug("Success: integral_power\n") 
+        logger.debug("Success: integral_power\n") 
     return rows
 
 # 指定日からnum日分の毎日の使用電力量の値を算出
@@ -294,11 +313,11 @@ def get_Daily_IntegralPower_fromSpecifiedDate(date, numday):
           row = get_SpecefiedDate_IntegralPower(date)
           rows.append(row)
     except (Exception, psycopg2.DatabaseError) as error:
-        logging.error(error)
-        logging.error("Error: Can't insert integral_power\n")
+        logger.error(error)
+        logger.error("Error: Can't insert integral_power\n")
         exit()
     finally:
-        logging.debug("Success: integral_power\n") 
+        logger.debug("Success: integral_power\n") 
     return rows
 
 

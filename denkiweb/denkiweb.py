@@ -8,7 +8,15 @@ import _strptime
 import denki_db
 
 import logging
-logging.basicConfig(filename='denki_db.log',level=logging.ERROR)
+import denki_log
+logging.basicConfig(
+   level=denki_log.log_level,
+   format=denki_log.log_format,
+   filename=denki_log.log_filename
+)
+logger = logging.getLogger("DenkiWebLog")
+logger.info("Start DenkiWeb System\n")
+
 
 from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
