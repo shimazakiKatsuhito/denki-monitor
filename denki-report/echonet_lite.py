@@ -97,11 +97,12 @@ def open_connect(ser, ipv6Addr):
         line = ser.readline()
         print(line, end="")
         if line.startswith("EVENT 24") :
-            logger.error("PANA 接続失敗")
+            logger.error("接続失敗")
             sys.exit()  #### 終了 ####
         elif line.startswith("EVENT 25") :
             # 接続完了！
             bConnected = True
+            logger.debug("接続成功")
             return  bConnected
 
 # ECHONET Lite フレーム作成
@@ -188,7 +189,7 @@ def getUnitIntegralPower(ser, ipv6Addr):
             return unitIntegralPower
         else:
             time.sleep(1)
-    logger.error("積算電力量単位の取得に失敗")
+    logger.warning("積算電力量単位の取得に失敗")
     return -1 # リトライしてだめならエラー応答(-1)
 
 
@@ -209,8 +210,9 @@ def getInstantaneousPower(ser, ipv6Addr):
             logger.debug("瞬時電力計測値:{0}[W]".format(intPower))
             return intPower
         else:
-            time.sleep(1)
-    logger.error("瞬時電力の取得に失敗")
+            logger.debug("瞬時電力の取得リトライ")
+            time.sleep(3)
+    logger.warning("瞬時電力の取得に失敗")
     return -1 # リトライしてだめならエラー応答(-1)
 
 # 定時積算電力量計測値の取得
@@ -231,7 +233,7 @@ def getIntegralPower(ser, ipv6Addr, unitIntegralPower):
             hexHour  = line[-16:-14]
             hexMin   = line[-14:-12]
             hexSec   = line[-12:-10]
-            hexPower = line[-10:]
+            hexPower = line[-8:]
             intYear  = int(hexYear,16)
             intMonth = int(hexMonth,16)
             intDay   = int(hexDay,16)
@@ -242,8 +244,9 @@ def getIntegralPower(ser, ipv6Addr, unitIntegralPower):
             logger.debug("定時積算電力量:{0}/{1}/{2} {3}:{4}:{5} {6}kWh".format(intYear,intMonth,intDay,intHour,intMin,intSec,intPower*unitIntegralPower))
             return intYear,intMonth,intDay,intHour,intMin,intSec,int(intPower*unitIntegralPower)
         else:
-            time.sleep(1)
-    logger.error("定時積算電力量計測値の取得に失敗")
+            logger.debug("定時積算電力量計測値の取得リトライ")
+            time.sleep(3)
+    logger.warning("定時積算電力量計測値の取得に失敗")
     return -1 # リトライしてだめならエラー応答(-1)
 
 

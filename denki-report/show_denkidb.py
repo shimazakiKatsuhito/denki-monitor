@@ -3,6 +3,15 @@
 
 import denki_db
 
+import logging
+logging.basicConfig(
+   level=logging.DEBUG,
+   format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+   filename="show_denkidb.log"
+)
+logger = logging.getLogger("DenkiLog")
+logger.debug("Start DenkiDB System\n")
+
 print('open')
 denki_db.open_db()
 print("")
