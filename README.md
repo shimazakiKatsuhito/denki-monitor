@@ -28,7 +28,7 @@ Webブラウザからの問い合わせに対し、最近の電気使用量を�
     HEMS用 Wi-SUNモジュール, Wi-SUN Route-B 専用  
     スマートメーターと通信するためのモジュールです。約1万円  
 
-![ハードウェア](hardware001.jpg)
+<img src="hardware001.jpg" width=60%>
 
 ### Software / Framework
 - OS: Rasbpian Stretch
