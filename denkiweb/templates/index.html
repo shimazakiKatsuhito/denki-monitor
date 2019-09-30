@@ -181,6 +181,16 @@
                     backgroundColor: "rgba(202,70,132,0.3)",
                     borderWidth: 2,
                 },
+                //データセット6 設定
+                {
+                    fill: 'origin', //'origin'まで塗る
+                    label: '6th week',
+                    data: [{% for row in graphdata4[5] %} '{{ row[2]/10.0 }}', {% endfor %}],
+                    lineTension:0,
+                    borderColor: "rgba(252,120,82,1)", 
+                    backgroundColor: "rgba(252,120,82,0.3)",
+                    borderWidth: 2,
+                },
             ]
         },
         options: {
