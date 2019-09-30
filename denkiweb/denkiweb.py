@@ -80,8 +80,12 @@ def get_SpecefiedDate_IntegralPower(date=None):
 
 @app.route('/dailythismonth')
 def get_deilythismonth_integral_power():
-    mstart = (datetime.today().replace(day=1)).strftime("%Y-%m-%d")
-    mdays = calendar.monthrange(datetime.today().year, datetime.today().month)[1]
+    return get_deilythismonth_integral_power2(str(datetime.today().year), str(datetime.today().month))
+
+@app.route('/dailythismonth/<year>/<month>')
+def get_deilythismonth_integral_power2(year,month):
+    mstart = year+"-"+month+"-01"
+    mdays = calendar.monthrange(int(year), int(month))[1]
     pdata = denki_db.get_Daily_IntegralPower_fromSpecifiedDate(mstart,mdays)
 
     wdata = []
@@ -96,7 +100,7 @@ def get_deilythismonth_integral_power():
       day+=1
     wdata.append(w1data)
     # 第2週目以降
-    for n in range(1,5):
+    for n in range(1,6):
       w2data = []
       for i in range(7):
         if(day<mdays):
@@ -112,7 +116,6 @@ def get_deilythismonth_integral_power():
 
     # index.html をレンダリングする
     return render_template('index.html', graphdata4=wdata, nowpower=datapower, nowtime=datatime, refresh_rate=60*60)
-
 
 if __name__ == "__main__":
     app.debug = True # デバッグモード有効化
